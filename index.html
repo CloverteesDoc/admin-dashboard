@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clovertees Admin Dashboard</title>
+    <!-- Favicon Clover -->
+    <link rel="icon" type="image/png" href="logo.png">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar no-print">
+        <div class="logo">
+            <h2>CLOVERTEES</h2>
+            <span>Admin</span>
+        </div>
+        <nav>
+            <a href="#" class="nav-item active" data-tab="pesanan" data-status="Pending">
+                <i>⏳</i> Pesanan Pending
+            </a>
+            <a href="#" class="nav-item" data-tab="pesanan" data-status="Approved">
+                <i>✅</i> Pesanan Approved
+            </a>
+            <a href="#" class="nav-item" data-tab="rekap">
+                <i>📊</i> Rekap Bulanan
+            </a>
+        </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content no-print">
+        
+        <!-- SECTION: DATA PESANAN -->
+        <section id="pesanan-section" class="tab-content active">
+            <header>
+                <h1>Data Pesanan</h1>
+                <div class="controls">
+                    <div class="search-box">
+                        <i>🔍</i>
+                        <input type="text" id="searchInput" placeholder="Cari nama atau ID...">
+                    </div>
+                    <select id="filterBulan">
+                        <option value="">Semua Bulan</option>
+                        <!-- Options generated dynamically -->
+                    </select>
+                    <!-- filterStatus dihilangkan karena digantikan oleh Tab -->
+                    <button id="refreshBtn" class="btn btn-primary">Refresh</button>
+                </div>
+            </header>
+
+            <div class="card table-container">
+                <table id="ordersTable">
+                    <thead>
+                        <tr>
+                            <th>No. Pesanan</th>
+                            <th>Tanggal</th>
+                            <th>Nama Customer</th>
+                            <th>Total Pcs</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersBody">
+                        <tr>
+                            <td colspan="6" class="text-center loading">Memuat data...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SECTION: REKAP BULANAN -->
+        <section id="rekap-section" class="tab-content">
+            <header>
+                <h1>Rekap Bulanan</h1>
+                <div class="controls">
+                    <select id="rekapFilterBulan">
+                        <!-- Options generated dynamically -->
+                    </select>
+                </div>
+            </header>
+
+            <div class="rekap-grid">
+                <div class="rekap-card">
+                    <h3>Total Pesanan</h3>
+                    <div class="value" id="valTotalOrders">0</div>
+                    <p class="desc">Pesanan masuk bulan ini</p>
+                </div>
+                <div class="rekap-card">
+                    <h3>Total Pcs</h3>
+                    <div class="value" id="valTotalPcs">0</div>
+                    <p class="desc">Total item diproduksi</p>
+                </div>
+                <div class="rekap-card">
+                    <h3>Kaos Custom</h3>
+                    <div class="value" id="valCustom">0</div>
+                    <p class="desc">Memiliki desain sablon/bordir</p>
+                </div>
+                <div class="rekap-card">
+                    <h3>Kaos Polos</h3>
+                    <div class="value" id="valPolos">0</div>
+                    <p class="desc">Tanpa desain</p>
+                </div>
+            </div>
+            
+            <div class="card mt-2">
+                <h3>Detail Item per Pesanan (Bulan Ini)</h3>
+                <table class="minimal-table">
+                    <thead>
+                        <tr>
+                            <th>ID Pesanan</th>
+                            <th>Item Custom</th>
+                            <th>Item Polos</th>
+                            <th>Total Pcs</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rekapDetailBody">
+                        <!-- Diisi JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- PRINT LAYOUT (Hanya muncul saat print) -->
+    <div id="print-container" class="print-only">
+        <!-- Akan diisi dinamis via JavaScript -->
+    </div>
+
+    <!-- MODAL ORDER DETAIL (Optional for later if needed, now we just print) -->
+    <div id="orderModal" class="modal no-print">
+        <div class="modal-content card">
+            <span class="close">&times;</span>
+            <h2 id="modalTitle">Detail Pesanan</h2>
+            <div id="modalBody"></div>
+            <div class="modal-footer mt-2">
+                <button id="modalPrintBtn" class="btn btn-primary">Print Slip & Label</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRM APPROVE -->
+    <div id="approveModal" class="modal no-print">
+        <div class="modal-content card" style="max-width: 450px; text-align: center; padding: 2.5rem 2rem;">
+            <div style="font-size: 3.5rem; margin-bottom: 1rem; color: var(--accent);">✅</div>
+            <h2 id="approveModalTitle" style="margin-bottom: 0.5rem;">Approve Pesanan?</h2>
+            <p id="approveModalBody" style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.5;">Pesanan <strong id="approveOrderIdText" style="color: var(--text-primary);"></strong> akan diapprove dan otomatis ditambahkan ke Kanban Produksi.</p>
+            
+            <div style="background: var(--bg-color); padding: 1rem; border-radius: 8px; margin-bottom: 2rem; text-align: left; border: 1px solid var(--border-color);">
+                <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 10px; text-transform: uppercase;">✏️ Kelengkapan Data</div>
+                <div style="margin-bottom: 10px;">
+                    <label style="display: block; font-size: 0.85rem; margin-bottom: 4px; font-weight: 500;">Ongkos Kirim (Rp)</label>
+                    <input type="number" id="approveOngkir" style="width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box; font-family: inherit;" placeholder="Contoh: 32000">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.85rem; margin-bottom: 4px; font-weight: 500;">Total Harga (Rp)</label>
+                    <input type="number" id="approveTotalHarga" style="width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box; font-family: inherit;" placeholder="Contoh: 350000">
+                </div>
+            </div>
+
+            <div class="modal-footer" style="display: flex; gap: 1rem; justify-content: center;">
+                <button id="btnCancelApprove" class="btn btn-outline" style="flex: 1;">Batal</button>
+                <button id="btnConfirmApprove" class="btn btn-primary" style="flex: 1;">Ya, Approve</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/print.js"></script>
+</body>
+</html>
