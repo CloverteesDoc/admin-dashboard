@@ -29,7 +29,7 @@ function printOrder(orderId) {
                     <div class="shipping-box">
                         <h4>PENGIRIM:</h4>
                         <p class="name">Clovertees</p>
-                        <p>Telp: 0812-XXXX-XXXX</p>
+                        <p>Telp: 0823-6356-0267</p>
                     </div>
                     <div class="shipping-box">
                         <h4>PENERIMA:</h4>
